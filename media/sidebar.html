@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; style-src {{cspSource}}; script-src 'nonce-{{nonce}}'; img-src {{cspSource}};"
+    />
+    <link rel="stylesheet" href="{{styleUri}}" />
+    <title>Auto Compose</title>
+  </head>
+  <body>
+    <header class="brand">
+      <img src="{{logoUri}}" width="40" height="40" alt="" />
+      <div>
+        <h1>Auto Compose</h1>
+        <p>让下一行，自然发生。</p>
+      </div>
+    </header>
+    <main>
+      <section class="status-card" aria-label="补全状态">
+        <div class="status-top">
+          <span id="phase" class="badge">准备就绪</span
+          ><button id="toggle" class="text-button" data-command="toggle">关闭</button>
+        </div>
+        <h2 id="model-label">DeepSeek</h2>
+        <p id="detail" role="status">写下想法，补全接着来。</p>
+        <div class="status-foot">
+          <span id="key-state">读取连接状态…</span
+          ><button data-command="setApiKey" class="text-button" id="key-action">连接服务</button>
+        </div>
+      </section>
+      <nav class="tabs" aria-label="控制台页面">
+        <button class="tab active" data-tab="setup" aria-selected="true">偏好</button
+        ><button class="tab" data-tab="activity" aria-selected="false">用量</button>
+      </nav>
+      <section id="setup" class="tab-panel">
+        <form id="settings-form">
+          <section class="section">
+            <h2>你的补全节奏</h2>
+            <p class="hint">简短续写，或多写一点。</p>
+            <div class="presets" aria-label="补全预设">
+              <button type="button" data-preset="fast" data-label="极速" aria-pressed="false">
+                <strong>极速</strong><small>轻快续写</small>
+              </button>
+              <button type="button" data-preset="balanced" data-label="均衡" aria-pressed="false">
+                <strong>均衡</strong><small>日常编码</small>
+              </button>
+              <button type="button" data-preset="complete" data-label="完整" aria-pressed="false">
+                <strong>完整</strong><small>更多细节</small>
+              </button>
+            </div>
+          </section>
+          <section class="section">
+            <label class="switch-row"
+              ><span
+                ><strong>理解当前项目</strong><small>参考已有函数，让补全更贴合代码。</small></span
+              ><input name="projectContext" type="checkbox" role="switch"
+            /></label>
+            <label class="switch-row"
+              ><span><strong>关联修改建议</strong><small>发现相关改动，预览后再应用。</small></span
+              ><input name="linkedEdits" type="checkbox" role="switch"
+            /></label>
+          </section>
+          <details class="disclosure">
+            <summary>模型与连接</summary>
+            <div class="disclosure-body">
+              <label for="provider">服务商</label
+              ><select id="provider" name="provider">
+                <option value="deepseek">DeepSeek</option>
+              </select>
+              <div id="endpoint-fields">
+                <label for="model">模型</label
+                ><input id="model" name="model" placeholder="deepseek-flash" spellcheck="false" />
+                <label for="baseUrl">服务地址</label
+                ><input
+                  id="baseUrl"
+                  name="baseUrl"
+                  type="url"
+                  placeholder="https://api.deepseek.com/beta"
+                  spellcheck="false"
+                />
+                <p class="hint">填写基础地址，不含 /completions。</p>
+                <div id="protocol-field">
+                  <label for="protocol">补全协议</label
+                  ><select id="protocol" name="protocol">
+                    <option value="fim">FIM · 代码填空</option>
+                    <option value="chat">Chat · 指令补全</option>
+                  </select>
+                </div>
+              </div>
+              <button type="button" data-command="testConnection" class="secondary wide">
+                测试已保存的连接
+              </button>
+            </div>
+          </details>
+          <details class="disclosure">
+            <summary>高级偏好</summary>
+            <div class="disclosure-body">
+              <label for="multiline">生成方式</label
+              ><select id="multiline" name="multiline">
+                <option value="auto">自动选择</option>
+                <option value="always">多行补全</option>
+                <option value="never">只补一行</option>
+              </select>
+              <div class="field-grid">
+                <div>
+                  <label for="debounceMs">输入等待 · ms</label
+                  ><input id="debounceMs" name="debounceMs" type="number" min="0" max="3000" />
+                </div>
+                <div>
+                  <label for="maxLines">最多生成行数</label
+                  ><input id="maxLines" name="maxLines" type="number" min="1" max="50" />
+                </div>
+                <div>
+                  <label for="maxTokens">生成 token 上限</label
+                  ><input id="maxTokens" name="maxTokens" type="number" min="1" max="4096" />
+                </div>
+                <div>
+                  <label for="minRequestIntervalMs">请求间隔 · ms</label
+                  ><input
+                    id="minRequestIntervalMs"
+                    name="minRequestIntervalMs"
+                    type="number"
+                    min="0"
+                    max="10000"
+                  />
+                </div>
+                <div>
+                  <label for="timeoutMs">请求超时 · ms</label
+                  ><input id="timeoutMs" name="timeoutMs" type="number" min="1000" max="120000" />
+                </div>
+                <div>
+                  <label for="contextChars">关联上下文字符</label
+                  ><input id="contextChars" name="contextChars" type="number" min="0" max="16000" />
+                </div>
+              </div>
+              <label class="switch-row"
+                ><span><strong>流式生成</strong><small>分段接收代码，达到长度后停止。</small></span
+                ><input name="streaming" type="checkbox" role="switch"
+              /></label>
+              <label class="switch-row"
+                ><span><strong>复用已有候选</strong><small>减少等待和重复请求。</small></span
+                ><input name="cacheEnabled" type="checkbox" role="switch"
+              /></label>
+              <label class="switch-row"
+                ><span><strong>项目函数索引</strong><small>检索未打开的 TS / JS 文件。</small></span
+                ><input name="projectIndex" type="checkbox" role="switch"
+              /></label>
+              <label for="contextMode">额外参考内容</label
+              ><select id="contextMode" name="contextMode">
+                <option value="current-file">当前文件</option>
+                <option value="open-files">加入最近打开的文件</option>
+              </select>
+              <label class="switch-row"
+                ><span><strong>参考符号定义</strong><small>从语言服务补充相关代码。</small></span
+                ><input name="useDefinitions" type="checkbox" role="switch"
+              /></label>
+              <p class="hint">关联代码会发送给当前服务，并遵守文件排除规则。</p>
+              <button type="button" data-command="openSettings" class="text-button">
+                查看全部设置 ↗
+              </button>
+            </div>
+          </details>
+          <div id="save-bar" class="save-bar" hidden>
+            <p id="feedback" role="status">有未保存的更改</p>
+            <button type="submit" class="primary" id="save">保存偏好</button>
+          </div>
+        </form>
+        <div class="quick-row">
+          <button id="pause" data-command="pause" class="text-button">暂停 10 分钟</button
+          ><button data-command="previewLinkedEdit" class="text-button">查看修改建议 ↗</button>
+        </div>
+        <aside class="tip">
+          <p><kbd>Tab</kbd> 接受 <span>·</span> <kbd>Esc</kbd> 隐藏</p>
+          <p>手动补全 <kbd id="shortcut">Ctrl Alt Space</kbd></p>
+        </aside>
+      </section>
+      <section id="activity" class="tab-panel" hidden>
+        <section class="section">
+          <h2>本次编码</h2>
+          <div class="metrics">
+            <div><strong id="stat-accepted">0</strong><span>已接受补全</span></div>
+            <div><strong id="stat-requests">0</strong><span>服务请求</span></div>
+          </div>
+        </section>
+        <section class="section usage-card">
+          <h2>累计用量</h2>
+          <div class="token-total">
+            <strong id="usage-totalTokens">0</strong><span>tokens</span>
+          </div>
+          <dl class="detail-list">
+            <div>
+              <dt>输入</dt>
+              <dd id="usage-promptTokens">0</dd>
+            </div>
+            <div>
+              <dt>输出</dt>
+              <dd id="usage-completionTokens">0</dd>
+            </div>
+          </dl>
+          <p class="hint">本机累计，重启保留。</p>
+          <p id="unknown-usage" class="hint" hidden>
+            另有 <span id="usage-unknownRequests">0</span> 次请求未返回用量，实际消耗可能更高。
+          </p>
+        </section>
+        <section class="section">
+          <div class="section-heading">
+            <h2>账户余额</h2>
+            <button data-command="refreshBalance" class="text-button">刷新</button>
+          </div>
+          <p id="balance-state" class="balance" role="status">点击刷新查看余额</p>
+        </section>
+        <details class="disclosure">
+          <summary>诊断与维护</summary>
+          <div class="disclosure-body">
+            <dl class="detail-list">
+              <div>
+                <dt>候选来源</dt>
+                <dd id="last-source">—</dd>
+              </div>
+              <div>
+                <dt>候选就绪</dt>
+                <dd id="stat-lastReadyMs">—</dd>
+              </div>
+              <div>
+                <dt>上下文检索</dt>
+                <dd id="stat-lastContextMs">—</dd>
+              </div>
+              <div>
+                <dt>等待</dt>
+                <dd id="stat-lastWaitMs">—</dd>
+              </div>
+              <div>
+                <dt>网络生成</dt>
+                <dd id="stat-lastLatencyMs">—</dd>
+              </div>
+              <div>
+                <dt>缓存命中</dt>
+                <dd id="stat-cacheHits">0</dd>
+              </div>
+              <div>
+                <dt>请求失败</dt>
+                <dd id="stat-errors">0</dd>
+              </div>
+              <div>
+                <dt>质量拦截</dt>
+                <dd id="stat-rejected">0</dd>
+              </div>
+            </dl>
+            <p id="index-state" class="hint"></p>
+            <div class="action-list">
+              <button data-command="diagnostics">运行诊断 ↗</button
+              ><button data-command="showOutput">查看日志 ↗</button
+              ><button data-command="rebuildIndex">重建索引</button
+              ><button data-command="clearCache">清空候选缓存</button
+              ><button data-command="deleteApiKey">移除服务密钥</button>
+            </div>
+          </div>
+        </details>
+      </section>
+    </main>
+    <script nonce="{{nonce}}" src="{{scriptUri}}"></script>
+  </body>
+</html>

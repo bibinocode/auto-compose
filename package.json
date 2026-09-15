@@ -1,0 +1,400 @@
+{
+  "name": "auto-compose",
+  "displayName": "Auto Compose",
+  "description": "写下想法，补全接着来。支持代码续写、注释生成、项目函数联想与关联修改建议。",
+  "version": "0.4.1",
+  "icon": "media/logo.png",
+  "publisher": "auto-compose-local",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bibinocode/auto-compose.git"
+  },
+  "homepage": "https://github.com/bibinocode/auto-compose#readme",
+  "bugs": {
+    "url": "https://github.com/bibinocode/auto-compose/issues"
+  },
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.96.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Machine Learning"
+  ],
+  "keywords": [
+    "autocomplete",
+    "deepseek",
+    "fim",
+    "ai"
+  ],
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "extensionKind": [
+    "workspace"
+  ],
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": false
+    }
+  },
+  "scripts": {
+    "build": "node esbuild.mjs",
+    "watch": "node esbuild.mjs --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "check": "npm run typecheck && npm test && npm run build",
+    "vscode:prepublish": "npm run typecheck && npm run build",
+    "package": "vsce package --no-dependencies",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" \"scripts/*.{mjs,cjs}\" \"media/*.{js,css,html}\" \"*.{json,mjs}\"",
+    "format:check": "prettier --check \"src/**/*.ts\" \"test/**/*.ts\" \"scripts/*.{mjs,cjs}\" \"media/*.{js,css,html}\" \"*.{json,mjs}\"",
+    "preview": "node scripts/preview.mjs",
+    "test:host": "node scripts/test-host.mjs",
+    "benchmark:project": "npm run build && node scripts/benchmark-project.mjs",
+    "benchmark:completion": "node scripts/benchmark-completion.mjs"
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "autoCompose.refreshBalance",
+        "title": "Auto Compose: 刷新账户余额"
+      },
+      {
+        "command": "autoCompose.setApiKey",
+        "title": "Auto Compose: 设置 API Key"
+      },
+      {
+        "command": "autoCompose.deleteApiKey",
+        "title": "Auto Compose: 删除当前 Provider 的 API Key"
+      },
+      {
+        "command": "autoCompose.toggle",
+        "title": "Auto Compose: 开启 / 关闭自动补全"
+      },
+      {
+        "command": "autoCompose.trigger",
+        "title": "Auto Compose: 触发代码补全"
+      },
+      {
+        "command": "autoCompose.testConnection",
+        "title": "Auto Compose: 测试连接"
+      },
+      {
+        "command": "autoCompose.openSettings",
+        "title": "Auto Compose: 打开设置"
+      },
+      {
+        "command": "autoCompose.openPanel",
+        "title": "Auto Compose: 打开补全控制台"
+      },
+      {
+        "command": "autoCompose.quickActions",
+        "title": "Auto Compose: 快捷操作"
+      },
+      {
+        "command": "autoCompose.selectProvider",
+        "title": "Auto Compose: 切换 Provider"
+      },
+      {
+        "command": "autoCompose.selectModel",
+        "title": "Auto Compose: 切换模型"
+      },
+      {
+        "command": "autoCompose.pause",
+        "title": "Auto Compose: 暂停补全 10 分钟"
+      },
+      {
+        "command": "autoCompose.resume",
+        "title": "Auto Compose: 恢复自动补全"
+      },
+      {
+        "command": "autoCompose.clearCache",
+        "title": "Auto Compose: 清空补全缓存"
+      },
+      {
+        "command": "autoCompose.diagnostics",
+        "title": "Auto Compose: 运行环境诊断"
+      },
+      {
+        "command": "autoCompose.showOutput",
+        "title": "Auto Compose: 查看输出日志"
+      },
+      {
+        "command": "autoCompose.previewLinkedEdit",
+        "title": "Auto Compose: 预览局部联动建议"
+      },
+      {
+        "command": "autoCompose.applyLinkedEdit",
+        "title": "Auto Compose: 应用局部联动建议"
+      },
+      {
+        "command": "autoCompose.rebuildIndex",
+        "title": "Auto Compose: 重建项目索引"
+      },
+      {
+        "command": "autoCompose.indexStatus",
+        "title": "Auto Compose: 查看项目索引状态"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "autoCompose.trigger",
+        "key": "ctrl+alt+space",
+        "mac": "cmd+alt+space",
+        "when": "editorTextFocus && !editorReadonly"
+      }
+    ],
+    "configuration": {
+      "title": "Auto Compose",
+      "properties": {
+        "autoCompose.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "启用自动补全。",
+          "scope": "resource"
+        },
+        "autoCompose.provider": {
+          "type": "string",
+          "default": "deepseek",
+          "scope": "application",
+          "description": "deepseek、openai-compatible，或其他扩展注册的 Provider ID。"
+        },
+        "autoCompose.baseUrl": {
+          "type": "string",
+          "default": "",
+          "scope": "application",
+          "description": "自定义 API 基础 URL（不含 /completions）。留空使用 https://api.deepseek.com/beta。"
+        },
+        "autoCompose.model": {
+          "type": "string",
+          "default": "",
+          "scope": "application",
+          "description": "留空使用 deepseek-flash；自定义服务请填写模型名称。"
+        },
+        "autoCompose.protocol": {
+          "type": "string",
+          "enum": [
+            "fim",
+            "chat"
+          ],
+          "default": "fim",
+          "scope": "application",
+          "description": "openai-compatible 的协议：FIM completions 或 chat completions。"
+        },
+        "autoCompose.debounceMs": {
+          "type": "integer",
+          "default": 150,
+          "minimum": 0,
+          "maximum": 3000,
+          "description": "停止输入后等待毫秒数。",
+          "scope": "resource"
+        },
+        "autoCompose.maxTokens": {
+          "type": "integer",
+          "default": 256,
+          "minimum": 1,
+          "maximum": 4096,
+          "description": "生成 token 上限。",
+          "scope": "resource"
+        },
+        "autoCompose.timeoutMs": {
+          "type": "integer",
+          "default": 15000,
+          "minimum": 1000,
+          "maximum": 120000,
+          "description": "请求超时。",
+          "scope": "resource"
+        },
+        "autoCompose.prefixChars": {
+          "type": "integer",
+          "default": 12000,
+          "minimum": 256,
+          "maximum": 64000,
+          "description": "发送的光标前上下文字符上限。",
+          "scope": "resource"
+        },
+        "autoCompose.suffixChars": {
+          "type": "integer",
+          "default": 4000,
+          "minimum": 0,
+          "maximum": 32000,
+          "description": "发送的光标后上下文字符上限。",
+          "scope": "resource"
+        },
+        "autoCompose.disabledLanguages": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "log",
+            "scminput"
+          ],
+          "description": "禁用补全的语言 ID。",
+          "scope": "resource"
+        },
+        "autoCompose.excludePatterns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "**/.env",
+            "**/.env.*",
+            "**/*.pem",
+            "**/*.key",
+            "**/node_modules/**",
+            "**/.git/**"
+          ],
+          "description": "不发送补全请求的文件 glob。",
+          "scope": "resource"
+        },
+        "autoCompose.streaming": {
+          "type": "boolean",
+          "default": true,
+          "description": "使用流式请求，达到生成行数限制后提前停止。",
+          "scope": "resource"
+        },
+        "autoCompose.multiline": {
+          "type": "string",
+          "enum": [
+            "auto",
+            "always",
+            "never"
+          ],
+          "default": "auto",
+          "enumDescriptions": [
+            "按光标位置智能选择单行或多行",
+            "始终允许多行",
+            "只生成一行"
+          ],
+          "description": "补全生成方式。",
+          "scope": "resource"
+        },
+        "autoCompose.maxLines": {
+          "type": "integer",
+          "default": 12,
+          "minimum": 1,
+          "maximum": 50,
+          "description": "单次补全的最大行数。",
+          "scope": "resource"
+        },
+        "autoCompose.minRequestIntervalMs": {
+          "type": "integer",
+          "default": 250,
+          "minimum": 0,
+          "maximum": 10000,
+          "description": "同一服务两次实际请求的最小间隔。",
+          "scope": "resource"
+        },
+        "autoCompose.contextMode": {
+          "type": "string",
+          "enum": [
+            "current-file",
+            "open-files"
+          ],
+          "default": "current-file",
+          "description": "最近打开文件片段开关；项目符号上下文由 projectContext 独立控制。",
+          "scope": "resource"
+        },
+        "autoCompose.contextChars": {
+          "type": "integer",
+          "default": 4000,
+          "minimum": 0,
+          "maximum": 16000,
+          "description": "关联文件与符号定义的总字符预算，不含主文件前后文。",
+          "scope": "resource"
+        },
+        "autoCompose.useDefinitions": {
+          "type": "boolean",
+          "default": false,
+          "description": "通过语言服务获取工作区内符号定义，作为关联上下文发送。",
+          "scope": "resource"
+        },
+        "autoCompose.maxFileChars": {
+          "type": "integer",
+          "default": 500000,
+          "minimum": 1000,
+          "maximum": 5000000,
+          "description": "超过此字符数的文件不触发补全或进入关联上下文。",
+          "scope": "resource"
+        },
+        "autoCompose.cacheEnabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "缓存候选并在继续输入匹配时复用剩余文本。",
+          "scope": "resource"
+        },
+        "autoCompose.projectIndex": {
+          "type": "boolean",
+          "default": true,
+          "description": "在后台索引工作区 TS/JS 导出符号，支持未打开文件的本地联想。",
+          "scope": "resource"
+        },
+        "autoCompose.projectContext": {
+          "type": "boolean",
+          "default": true,
+          "description": "将本地索引命中的少量项目函数签名和文档加入模型上下文。",
+          "scope": "resource"
+        },
+        "autoCompose.indexMaxFiles": {
+          "type": "integer",
+          "default": 1500,
+          "minimum": 100,
+          "maximum": 10000,
+          "description": "后台项目索引的文件数量上限；总源码预算 32MB。",
+          "scope": "resource"
+        },
+        "autoCompose.linkedEdits": {
+          "type": "boolean",
+          "default": true,
+          "description": "为签名修改和同文件相邻重复修改生成可预览的局部联动建议。",
+          "scope": "resource"
+        }
+      }
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "autoCompose",
+          "title": "Auto Compose",
+          "icon": "media/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "autoCompose": [
+        {
+          "type": "webview",
+          "id": "autoCompose.sidebar",
+          "name": "代码补全"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "autoCompose.openSettings",
+          "when": "view == autoCompose.sidebar",
+          "group": "navigation"
+        }
+      ]
+    }
+  },
+  "dependencies": {
+    "ignore": "^7.0.9",
+    "picomatch": "^4.0.3",
+    "typescript": "^5.8.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.0",
+    "@types/picomatch": "^4.0.2",
+    "@types/vscode": "1.96.0",
+    "@vscode/vsce": "^3.6.0",
+    "esbuild": "^0.25.0",
+    "prettier": "^3.9.6",
+    "vitest": "^3.2.4"
+  },
+  "types": "./dist/api.d.ts"
+}

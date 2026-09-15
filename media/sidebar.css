@@ -1,0 +1,472 @@
+:root {
+  color-scheme: light dark;
+  --surface: var(--vscode-sideBar-background, #151b20);
+  --text: var(--vscode-foreground, #e7efef);
+  --muted: var(--vscode-descriptionForeground, #96a7ad);
+  --accent: var(--vscode-textLink-foreground, #65d9c4);
+  --border: var(--vscode-widget-border, #2a363c);
+  --field: var(--vscode-input-background, #1c262c);
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  color: var(--text);
+  background: var(--surface);
+  font: 13px/1.6 var(--vscode-font-family, system-ui, sans-serif);
+}
+[hidden] {
+  display: none !important;
+}
+button,
+input,
+select {
+  font: inherit;
+}
+button {
+  cursor: pointer;
+}
+:is(button, input, select, summary):focus-visible {
+  outline: 2px solid var(--vscode-focusBorder, #65d9c4);
+  outline-offset: 3px;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 25px 18px 22px;
+}
+.brand img {
+  flex: 0 0 40px;
+  border-radius: 12px;
+}
+h1 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 650;
+  letter-spacing: -0.5px;
+}
+.brand p {
+  margin: 1px 0 0;
+  font-size: 11px;
+  color: var(--muted);
+}
+main {
+  padding: 0 18px 22px;
+}
+h2 {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+}
+.status-card {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 15px;
+  background: linear-gradient(
+    120deg,
+    color-mix(in srgb, var(--accent) 8%, var(--surface)),
+    var(--surface)
+  );
+}
+.status-top,
+.status-foot,
+.section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.status-card h2 {
+  font-size: 18px;
+  letter-spacing: -0.4px;
+  margin: 12px 0 3px;
+  overflow-wrap: anywhere;
+}
+.status-card p {
+  color: var(--muted);
+  font-size: 11px;
+  margin: 0 0 15px;
+  overflow-wrap: anywhere;
+}
+.status-foot {
+  border-top: 1px solid var(--border);
+  padding-top: 10px;
+  font-size: 10px;
+  color: var(--muted);
+}
+.badge {
+  font-size: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.badge::before {
+  content: '';
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--vscode-testing-iconPassed, #65d9c4);
+}
+.badge:is([data-phase='key'], [data-phase='error'], [data-phase='cooldown'])::before {
+  background: var(--vscode-editorWarning-foreground, #dfaf69);
+}
+.badge:is([data-phase='disabled'], [data-phase='paused'])::before {
+  background: var(--muted);
+}
+.text-button {
+  border: 0;
+  padding: 2px 0;
+  background: none;
+  color: var(--accent);
+  font-size: 11px;
+}
+.text-button:hover {
+  text-decoration: underline;
+}
+.tabs {
+  display: flex;
+  gap: 5px;
+  padding: 4px;
+  background: var(--field);
+  border-radius: 9px;
+  margin: 20px 0;
+}
+.tab {
+  flex: 1;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: var(--muted);
+  padding: 5px 8px;
+  font-size: 12px;
+}
+.tab.active {
+  color: var(--text);
+  background: var(--surface);
+  box-shadow: 0 1px 4px #00000014;
+}
+.section {
+  margin: 0 0 22px;
+}
+.hint {
+  margin: 5px 0 12px;
+  font-size: 11px;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+.presets {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+.presets button {
+  min-width: 0;
+  padding: 12px 2px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: transparent;
+  color: var(--text);
+}
+.presets strong {
+  display: block;
+  font-size: 12px;
+  font-weight: 550;
+}
+.presets small {
+  font-size: 9px;
+  color: var(--muted);
+}
+.presets button[aria-pressed='true'] {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 9%, var(--surface));
+}
+.presets button[aria-pressed='true'] strong {
+  color: var(--accent);
+}
+.presets button:hover {
+  background: var(--field);
+}
+.switch-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin: 17px 0;
+}
+.switch-row strong {
+  font-size: 12px;
+  font-weight: 500;
+}
+.switch-row small {
+  display: block;
+  color: var(--muted);
+  font-size: 10px;
+  margin-top: 2px;
+}
+input[type='checkbox'] {
+  appearance: none;
+  position: relative;
+  width: 29px;
+  height: 17px;
+  flex: 0 0 29px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--field);
+  cursor: pointer;
+}
+input[type='checkbox']::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--muted);
+  transition: transform 0.12s;
+}
+input[type='checkbox']:checked {
+  background: var(--vscode-button-background, #318b79);
+  border-color: transparent;
+}
+input[type='checkbox']:checked::after {
+  background: var(--vscode-button-foreground, white);
+  transform: translateX(12px);
+}
+.disclosure {
+  border-top: 1px solid var(--border);
+}
+summary {
+  cursor: pointer;
+  padding: 13px 0;
+  font-size: 12px;
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+}
+summary::-webkit-details-marker {
+  display: none;
+}
+summary::after {
+  content: '+';
+  color: var(--muted);
+}
+details[open] > summary::after {
+  content: '−';
+}
+.disclosure-body {
+  padding: 0 0 17px;
+}
+.disclosure-body > label:first-child {
+  margin-top: 0;
+}
+label {
+  display: block;
+  font-size: 11px;
+  margin: 12px 0 5px;
+}
+input:not([type='checkbox']),
+select {
+  width: 100%;
+  min-width: 0;
+  padding: 7px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--vscode-input-border, var(--border));
+  background: var(--field);
+  color: var(--vscode-input-foreground, var(--text));
+}
+.field-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 10px;
+}
+.secondary,
+.action-list button {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  background: transparent;
+  padding: 7px 10px;
+  font-size: 11px;
+}
+.wide {
+  width: 100%;
+  margin-top: 12px;
+}
+.secondary:hover,
+.action-list button:hover {
+  background: var(--field);
+}
+.save-bar {
+  position: sticky;
+  bottom: 0;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding: 8px 0 12px;
+  z-index: 2;
+}
+#feedback {
+  font-size: 11px;
+  color: var(--muted);
+  margin: 5px 0 8px;
+}
+#feedback.error {
+  color: var(--vscode-errorForeground, #f49898);
+}
+.primary {
+  width: 100%;
+  border: 0;
+  border-radius: 7px;
+  padding: 9px;
+  color: var(--vscode-button-foreground, #102b25);
+  background: var(--vscode-button-background, #65d9c4);
+  font-size: 12px;
+  font-weight: 600;
+}
+.primary:hover {
+  filter: brightness(1.08);
+}
+button:disabled {
+  cursor: wait;
+  opacity: 0.5;
+}
+.quick-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 18px 0 20px;
+  flex-wrap: wrap;
+}
+.quick-row button {
+  color: var(--muted);
+  font-size: 10px;
+}
+.tip {
+  text-align: center;
+  color: var(--muted);
+  font-size: 10px;
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
+}
+.tip p {
+  margin: 5px 0;
+}
+.tip span {
+  margin: 0 8px;
+}
+kbd {
+  font: 10px var(--vscode-editor-font-family, monospace);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 2px 4px;
+  white-space: nowrap;
+}
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+.metrics > div {
+  padding: 12px;
+  background: var(--field);
+  border-radius: 9px;
+}
+.metrics strong {
+  display: block;
+  font-size: 25px;
+  font-weight: 550;
+  letter-spacing: -1px;
+  font-variant-numeric: tabular-nums;
+}
+.metrics span {
+  color: var(--muted);
+  font-size: 10px;
+}
+.usage-card {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 15px;
+}
+.token-total {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: 10px;
+  overflow-wrap: anywhere;
+}
+.token-total strong {
+  font-size: 30px;
+  font-weight: 550;
+  letter-spacing: -1px;
+  font-variant-numeric: tabular-nums;
+}
+.token-total span {
+  font-size: 11px;
+  color: var(--muted);
+}
+.detail-list {
+  margin: 10px 0;
+}
+.detail-list div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 5px 0;
+  font-size: 11px;
+}
+dt {
+  color: var(--muted);
+}
+dd {
+  margin: 0;
+  text-align: right;
+  overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums;
+}
+.usage-card .hint {
+  margin-bottom: 0;
+}
+.balance {
+  font-size: 12px;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+  margin: 8px 0;
+}
+.action-list {
+  display: grid;
+  gap: 6px;
+  margin-top: 12px;
+}
+@media (max-width: 260px) {
+  .brand {
+    padding: 20px 12px;
+    gap: 9px;
+  }
+  main {
+    padding: 0 12px 18px;
+  }
+  h1 {
+    font-size: 16px;
+  }
+  .field-grid {
+    grid-template-columns: 1fr;
+  }
+  .status-card {
+    padding: 12px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}
+@media (forced-colors: active) {
+  .presets button[aria-pressed='true'],
+  input[type='checkbox']:checked {
+    outline: 2px solid Highlight;
+  }
+}
