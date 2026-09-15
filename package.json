@@ -4,7 +4,7 @@
   "description": "写下想法，补全接着来。支持代码续写、注释生成、项目函数联想与关联修改建议。",
   "version": "0.4.1",
   "icon": "media/logo.png",
-  "publisher": "auto-compose-local",
+  "publisher": "bbnocode",
   "repository": {
     "type": "git",
     "url": "https://github.com/bibinocode/auto-compose.git"

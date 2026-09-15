@@ -4,7 +4,7 @@
 
 1. 使用 Microsoft 账号登录 [Publisher 管理页](https://marketplace.visualstudio.com/manage)。
 2. 创建 Publisher，记录其 **ID**。ID 与显示名称不同，也不一定等于 GitHub 用户名。
-3. 将 `package.json` 的 `publisher` 从开发占位值 `auto-compose-local` 改为刚创建的 ID。`name` 保持 `auto-compose`，`version` 必须是未发布过的版本号。
+3. 本项目正式 Publisher ID 为 `bbnocode`，`package.json` 的 `publisher` 必须填写这个字符串，不要填写后台显示的 UUID。`name` 保持 `auto-compose`，`version` 必须是未发布过的版本号。
 4. 在项目目录执行：
 
    ```sh
